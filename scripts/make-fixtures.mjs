@@ -38,7 +38,7 @@ git(['init', '-q', '-b', 'main']);
 copy('package.json'); copy('README.md'); copy('src/total.js');
 commit('initial express expense app', '2021-06-01T12:00:00Z');
 
-copy('src/legacy-entry.js'); copy('data/sample.json'); copy('check/expense-total.mjs');
+copy('src/legacy-entry.js'); copy('data/sample.json'); copy('check/expense-total.mjs'); copy('check/expense-property.mjs');
 commit('add expense entrypoint and sample data', '2022-02-10T12:00:00Z');
 
 // Fake template-generated example; not a real secret.

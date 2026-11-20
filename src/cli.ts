@@ -8,6 +8,9 @@ import { Casefile } from "./casefile.js";
 import { Diagnosis, toScoreInput, validateDiagnosis } from "./diagnosis.js";
 import { score } from "./score.js";
 import { contextPack, recordUsage } from "./context.js";
+import { readManifest } from "./manifest.js";
+import { applyRecordedChange, writeReplayPlan } from "./replay.js";
+import { isBaseline, recordBaseline, verifyAfter } from "./verify.js";
 
 const program = new Command();
 program.name("levantate").description("Resurrect your dead repos.").version("0.1.0");
@@ -47,6 +50,43 @@ program
     recordUsage(o.dir, { at: new Date().toISOString(), phase: o.phase, inputBytes: pack.bytes, passes: 1 });
     console.log(pack.text);
     console.error(`context ${pack.bytes} bytes, ${pack.files.length} files`);
+  });
+
+program
+  .command("replay")
+  .description("Offline replay of the recorded plan and change on the synthetic fixture.")
+  .argument("<step>", "plan | apply")
+  .option("--dir <path>", "fixture directory", process.cwd())
+  .option("--properties", "also select the seeded property check")
+  .action((step: string, o: { dir: string; properties?: boolean }) => {
+    const cf = Casefile.parse(JSON.parse(readFileSync(join(o.dir, ".lazarus", "casefile.json"), "utf8")));
+    if (step === "plan") {
+      const m = writeReplayPlan(o.dir, cf, { properties: o.properties });
+      console.log(`plan ${m.planDigest.slice(0, 12)} written (${m.evaluation.selection})`);
+    } else if (step === "apply") {
+      const m = readManifest(o.dir);
+      console.log(`applied recorded change to ${applyRecordedChange(o.dir, m)}`);
+    } else throw new Error("step must be plan or apply");
+  });
+
+program
+  .command("verify")
+  .description("Run the approved check before and after the repair.")
+  .argument("<phase>", "baseline | after")
+  .option("--dir <path>", "workspace directory", process.cwd())
+  .action((phase: string, o: { dir: string }) => {
+    const cf = Casefile.parse(JSON.parse(readFileSync(join(o.dir, ".lazarus", "casefile.json"), "utf8")));
+    const m = readManifest(o.dir);
+    if (phase === "baseline") {
+      const r = recordBaseline(o.dir, m, cf);
+      if (isBaseline(r)) console.log(`baseline recorded: expected failure seen (${r.signature})`);
+      else { console.log(`${r.status}: ${r.reason}`); process.exit(1); }
+    } else if (phase === "after") {
+      const r = verifyAfter(o.dir, m, cf);
+      console.log(`${r.status}: ${r.reason}`);
+      if (r.property.status !== "not_selected") console.log(`property ${r.property.status}: ${r.property.detail}`);
+      if (r.status !== "verified") process.exit(1);
+    } else throw new Error("phase must be baseline or after");
   });
 
 program
