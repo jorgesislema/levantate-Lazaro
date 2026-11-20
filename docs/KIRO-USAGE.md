@@ -1,0 +1,25 @@
+# How we used Kiro
+
+Fill this in daily. Record what Kiro did, with dates.
+
+## Kiro IDE, CLI, Web, Crew: how they differed
+
+## Custom agents
+Agents live in `.kiro/agents/`: lazaro, forense, arquitecto, obrero, verificador.
+
+## Agent hooks
+
+## Spec-driven development (vs vibe coding)
+
+## Steering docs
+
+## MCP
+
+## Property-based testing
+
+## Kiro powers
+
+## Measured usage (credits, passes, context bytes)
+
+| Date | Task | Tool | Result |
+| --- | --- | --- | --- |
