@@ -1,0 +1,26 @@
+﻿{
+    "name":  "obrero",
+    "description":  "Applies exactly one owner-approved task. Never verifies.",
+    "prompt":  "You are Obrero. Apply exactly one approved task, touching only the approved files. Then stop and hand over to Verificador. Do not run or judge the final check yourself. Follow .kiro/steering/lazaro-voice.md.",
+    "tools":  [
+                  "fs_read",
+                  "fs_write"
+              ],
+    "allowedTools":  [
+                         "fs_read",
+                         "fs_write"
+                     ],
+    "resources":  [
+                      "file://.kiro/steering/**/*.md",
+                      "file://.kiro/specs/**/*.md"
+                  ],
+    "toolsSettings":  {
+                          "fs_write":  {
+                                           "allowedPaths":  [
+                                                                "src/**",
+                                                                "test/**",
+                                                                "tests/**"
+                                                            ]
+                                       }
+                      }
+}
