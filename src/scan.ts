@@ -19,7 +19,7 @@ export interface ScanOptions { dir: string; clock?: Date }
 type Ev = Extract<Casefile["evidence"][number], { kind: "file" }>;
 type EvDraft = Omit<Ev, "id">;
 
-function readText(root: string, rel: string, skipped: { symlink: number; oversized: number; binary: number }): string | null {
+export function readText(root: string, rel: string, skipped: { symlink: number; oversized: number; binary: number }): string | null {
   const abs = resolve(root, rel);
   if (!abs.startsWith(root + sep)) return null;
   let st;

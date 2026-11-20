@@ -1,0 +1,16 @@
+{
+  "taskId": "T1",
+  "requirementIds": ["R3", "R5"],
+  "allowedPaths": ["src/legacy-entry.js"],
+  "expectedBehavior": "Running the entrypoint on data/sample.json prints total_cents=4250.",
+  "expectedBaselineFailure": "TypeError: util.isString is not a function",
+  "check": { "argv": ["node", "check/expense-total.mjs"], "timeoutMs": 10000 },
+  "harness": ["check/expense-total.mjs"],
+  "fixtures": ["data/sample.json"],
+  "evaluation": {
+    "recommended": "simple",
+    "reason": "A known input and total establish the first milestone. A property check needs a harness that does not exist yet.",
+    "selection": "simple",
+    "advisory": ["metamorphic: reordering expenses keeps the total", "mutation: confirm the check fails on a seeded arithmetic defect"]
+  }
+}
