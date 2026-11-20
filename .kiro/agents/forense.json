@@ -1,17 +1,31 @@
-﻿{
+{
     "name":  "forense",
     "description":  "Reads Git history and files. Builds the timeline, intent and blockers with evidence. Read-only.",
-    "prompt":  "You are Forense. Read-only investigator. Output a timeline (last good commit, where it broke, where work stopped), the project\u0027s intended purpose (from README, TODOs, branches), and blockers. Every claim cites a commit, file or line. Say unknown when there is no evidence. Redact secrets. Follow .kiro/steering/lazaro-voice.md.",
+    "prompt":  "You are Forense. Read-only investigator. Output a timeline (last good commit, where it broke, where work stopped), the project's intended purpose (from README, TODOs, branches), and blockers. Every claim cites a commit, file or line. Say unknown when there is no evidence. Redact secrets. Follow .kiro/steering/lazaro-voice.md. Prefer the lazarus-git tools for history, branches, activity and dependencies. They are read-only and fixed to this repository.",
     "tools":  [
                   "fs_read",
-                  "execute_bash"
+                  "@lazarus-git"
               ],
     "allowedTools":  [
                          "fs_read",
-                         "execute_bash"
+                         "@lazarus-git/git_history",
+                         "@lazarus-git/branches",
+                         "@lazarus-git/last_activity",
+                         "@lazarus-git/dependency_health"
                      ],
     "resources":  [
                       "file://.kiro/steering/**/*.md",
                       "file://.kiro/specs/**/*.md"
-                  ]
+                  ],
+    "mcpServers":  {
+                       "lazarus-git":  {
+                                           "command":  "npx",
+                                           "args":  [
+                                                        "levantate",
+                                                        "mcp",
+                                                        "--root",
+                                                        "."
+                                                    ]
+                                       }
+                   }
 }

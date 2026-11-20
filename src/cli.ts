@@ -165,6 +165,15 @@ program
   });
 
 program
+  .command("mcp")
+  .description("Start the read-only Git MCP server (stdio) for the Forense agent.")
+  .option("--root <path>", "repository root to expose", process.cwd())
+  .action(async (o: { root: string }) => {
+    const { serve } = await import("./mcp.js");
+    await serve(o.root);
+  });
+
+program
   .command("validate")
   .description("Validate .lazarus/diagnosis.json against the casefile and print the score.")
   .option("--dir <path>", "workspace directory", process.cwd())
@@ -181,7 +190,7 @@ program
   });
 
 try {
-  program.parse();
+  await program.parseAsync();
 } catch (e) {
   console.error((e as Error).message);
   process.exit(1);

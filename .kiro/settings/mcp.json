@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "lazarus-git": {
+      "command": "node",
+      "args": ["dist/cli.js", "mcp", "--root", "."],
+      "autoApprove": ["git_history", "branches", "last_activity", "dependency_health"]
+    }
+  }
+}

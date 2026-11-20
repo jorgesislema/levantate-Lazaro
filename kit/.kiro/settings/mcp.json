@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "lazarus-git": {
+      "command": "npx",
+      "args": ["levantate", "mcp", "--root", "."],
+      "autoApprove": ["git_history", "branches", "last_activity", "dependency_health"]
+    }
+  }
+}

@@ -17,7 +17,8 @@
                     "test":  "vitest run",
                     "demo":  "node dist/cli.js demo --out demo-out",
                     "smoke":  "npm run build \u0026\u0026 npm run demo",
-                    "release":  "node scripts/make-release.mjs"
+                    "release":  "node scripts/make-release.mjs",
+                    "pretest":  "npm run build"
                 },
     "devDependencies":  {
                             "@types/node":  "^24.0.0",
@@ -27,6 +28,7 @@
                             "vitest":  "^2.1.0"
                         },
     "dependencies":  {
+                         "@modelcontextprotocol/sdk":  "^1.32.2",
                          "commander":  "^15.1.0",
                          "zod":  "^4.6.7"
                      },

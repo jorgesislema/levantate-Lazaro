@@ -25,3 +25,4 @@ Agents live in `.kiro/agents/`: lazaro, forense, arquitecto, obrero, verificador
 | --- | --- | --- | --- |
 | 2026-11-20 | T4 context pack for diagnosis | levantate context | 907 bytes, 3 files, 1 pass (measured) |
 | 2026-11-20 | T5 to T7 build | Kiro (this session) | Hooks typecheck-on-edit and lazarus-verify-after-task are written and format-tested. Their trigger inside the Kiro IDE is NOT yet observed. |
+| 2026-11-20 | MCP server lazarus-git | Kiro (this session) | 4 read-only tools, tested with a real MCP client over stdio. Not yet observed running inside the Kiro IDE agent. |

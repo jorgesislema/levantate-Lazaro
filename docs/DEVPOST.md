@@ -18,7 +18,7 @@ Answer each topic with what actually happened. Source notes: `docs/KIRO-USAGE.md
 - Agent hooks: `typecheck-on-edit` and `lazarus-verify-after-task`. [Trigger observed in the IDE? yes/no]
 - Spec-driven development: specs in `.kiro/specs/revival-kit/`, tasks T1-T7. [Spec vs vibe coding: measured difference]
 - Steering: always-on `lazarus.md` and `lazaro-voice.md`, manual phase prompts. [What made the biggest difference]
-- MCP: [server and what it enabled, or "not used"]
+- MCP: `lazarus-git`, a read-only stdio server with four tools (git_history, branches, last_activity, dependency_health). It takes no path argument, so the Forense agent can read only the repo it was started in. It exposes unfinished branches that file reads alone would miss. [Describe what it changed in the build]
 - Property-based testing: seven score properties (P1-P7) and a seeded fixture property. [Bugs found]
 - Kiro powers: [which, or "not used"]
 

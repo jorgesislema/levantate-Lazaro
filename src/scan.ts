@@ -47,7 +47,7 @@ function readmePromises(text: string): { text: string; line: number }[] {
 }
 
 /** Resolve the Git root and require that the operator ran from it, so a stray parent repo is never scanned. */
-function repoRoot(dir: string): string {
+export function repoRoot(dir: string): string {
   const root = realpathSync(git(dir, ["rev-parse", "--show-toplevel"]).trim());
   if (realpathSync(dir) !== root) throw new Error(`Run from the repository root: ${root}`);
   return root;
