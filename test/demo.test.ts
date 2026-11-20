@@ -19,7 +19,7 @@ describe("offline demo", () => {
 
   it("labels stored inputs as replay and checks as live", () => {
     const log = lines.join("\n");
-    expect(log).toContain("REPLAY inputs, not a live Kiro run");
+    expect(log).toContain("REPLAY inputs, hand-authored placeholder, not a live Kiro run");
     expect(log).toContain("(LIVE)");
   });
 

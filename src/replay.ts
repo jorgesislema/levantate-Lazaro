@@ -6,8 +6,10 @@ import { Diagnosis } from "./diagnosis.js";
 import { bind, digestsFor, TaskManifest, type ManifestDraft } from "./manifest.js";
 import { canEditSource } from "./profiles.js";
 import { writeAtomic } from "./casefile.js";
+import { existsSync } from "node:fs";
+import { loadRecorded, REPLAY_DIR } from "./recorded.js";
 
-const REPLAY = join(dirname(fileURLToPath(import.meta.url)), "..", "replay", "gastos-app");
+const REPLAY = REPLAY_DIR;
 export const PROPERTY = { seed: 42, runs: 200, timeoutMs: 10000, path: "check/expense-property.mjs" } as const;
 
 function tokens(c: Casefile): Record<string, string> {
@@ -75,6 +77,27 @@ export function applyRecordedChange(root: string, m: TaskManifest): string {
   const target = m.allowedPaths[0]!;
   if (!canEditSource("resurrection", true, m.allowedPaths, target)) throw new Error(`edit not allowed: ${target}`);
   mkdirSync(dirname(join(root, target)), { recursive: true });
-  copyFileSync(join(REPLAY, "legacy-entry.fixed.js"), join(root, target));
+  const recorded = join(REPLAY, "recorded", "change");
+  copyFileSync(existsSync(recorded) ? recorded : join(REPLAY, "legacy-entry.fixed.js"), join(root, target));
   return target;
+}
+
+export interface Plan {
+  manifest: TaskManifest;
+  diagnosis: Diagnosis;
+  /** "recorded" comes from a real Kiro session. "placeholder" is hand-authored. */
+  source: "recorded" | "placeholder";
+  provenance?: { surface: string; model: string; recordedAt: string };
+}
+
+/** Use the recorded Kiro session when it matches this casefile, else the placeholder templates. */
+export function planFor(root: string, c: Casefile, opts: { properties?: boolean } = {}): Plan {
+  const rec = loadRecorded(c, root);
+  if (rec) {
+    writeAtomic(join(root, ".lazarus", "diagnosis.json"), JSON.stringify(rec.diagnosis, null, 2) + "\n");
+    writeAtomic(join(root, ".kiro", "specs", "revival", "task-1.json"), JSON.stringify(rec.manifest, null, 2) + "\n");
+    return { manifest: rec.manifest, diagnosis: rec.diagnosis, source: "recorded", provenance: rec.provenance };
+  }
+  const manifest = writeReplayPlan(root, c, opts);
+  return { manifest, diagnosis: replayDiagnosis(c), source: "placeholder" };
 }

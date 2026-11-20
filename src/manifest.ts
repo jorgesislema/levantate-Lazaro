@@ -64,6 +64,56 @@ export function digestsFor(root: string, paths: string[]): { path: string; sha25
 
 export interface ManifestCheck { ok: boolean; errors: string[] }
 
+/**
+ * A plan written by an agent. It names files but carries no digests and no plan digest,
+ * because a model cannot compute them reliably. `bindDraft` fills them from disk.
+ */
+export const DraftManifest = z.object({
+  taskId: z.string().regex(/^T\d+$/),
+  requirementIds: z.array(z.string().regex(/^R\d+$/)).min(1),
+  allowedPaths: z.array(RelPath).min(1),
+  expectedBehavior: z.string().min(1).max(300),
+  expectedBaselineFailure: z.string().min(1).max(200),
+  check: z.object({ argv: z.array(z.string().min(1)).min(1), timeoutMs: z.number().int().min(1000).max(60000) }),
+  harness: z.array(RelPath).min(1),
+  fixtures: z.array(RelPath),
+  evaluation: z.object({
+    recommended: z.enum(["simple", "simple+properties"]),
+    reason: z.string().min(1).max(300),
+    selection: z.enum(["simple", "simple+properties"]),
+    advisory: z.array(z.string()).max(5),
+    property: z
+      .object({
+        rule: z.string().min(1).max(200),
+        argv: z.array(z.string().min(1)).min(1),
+        harness: RelPath,
+        seed: z.number().int(),
+        runs: z.number().int().min(1).max(1000),
+        timeoutMs: z.number().int().min(1000).max(60000),
+      })
+      .optional(),
+  }),
+});
+export type DraftManifest = z.infer<typeof DraftManifest>;
+
+/** Turn an agent-written draft into a bound manifest for this casefile. */
+export function bindDraft(root: string, draft: DraftManifest, caseId: string): TaskManifest {
+  const { harness, fixtures, evaluation: ev, ...rest } = draft;
+  const { property: draftProperty, ...evRest } = ev;
+  const property = draftProperty
+    ? { ...draftProperty, harness: digestsFor(root, [draftProperty.harness])[0]! }
+    : undefined;
+  const full: ManifestDraft = {
+    schemaVersion: 1,
+    caseId,
+    ...rest,
+    harness: digestsFor(root, harness),
+    fixtures: digestsFor(root, fixtures),
+    evaluation: { ...evRest, ...(property ? { property } : {}) },
+  };
+  return TaskManifest.parse(bind(full));
+}
+
 /** Validate a manifest against the casefile and, when `root` is given, the files on disk. */
 export function validateManifest(m: TaskManifest, c: Casefile, root?: string): ManifestCheck {
   const errors: string[] = [];

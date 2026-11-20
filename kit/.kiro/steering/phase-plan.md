@@ -1,7 +1,7 @@
 ---
 inclusion: manual
 ---
-Use the validated diagnosis and cited excerpts. Write .kiro/specs/revival/{requirements.md,design.md,tasks.md,task-1.json}.
+Use the validated diagnosis and cited excerpts. Write .kiro/specs/revival/{requirements.md,design.md,tasks.md,task-1.draft.json}. The draft names files only: no digests, no plan digest, no case ID. Then run `levantate plan bind`, which fills them.
 Use EARS acceptance criteria. Order at most 10 tasks; spend at most 1,200 words
 across the Markdown artifacts. Each task needs an ID, rationale, skill, minutes,
 allowed paths, evidence or user goal, and a check. Make task 1 one observable

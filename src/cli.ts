@@ -8,13 +8,14 @@ import { Casefile } from "./casefile.js";
 import { Diagnosis, toScoreInput, validateDiagnosis } from "./diagnosis.js";
 import { score } from "./score.js";
 import { contextPack, recordUsage } from "./context.js";
-import { readManifest, TaskManifest } from "./manifest.js";
+import { bindDraft, DraftManifest, readManifest, TaskManifest, validateManifest } from "./manifest.js";
 import { applyRecordedChange, writeReplayPlan } from "./replay.js";
 import { isBaseline, recordBaseline, verifyAfter } from "./verify.js";
 import type { Verification } from "./verify.js";
 import { writeAtomic } from "./casefile.js";
 import { renderReport } from "./report.js";
 import { runDemo } from "./demo.js";
+import { importRecorded } from "./recorded.js";
 import { exportSummary } from "./summary.js";
 import { review, renderTable, renderReviewHtml } from "./review.js";
 
@@ -171,6 +172,47 @@ program
   .action(async (o: { root: string }) => {
     const { serve } = await import("./mcp.js");
     await serve(o.root);
+  });
+
+program
+  .command("plan")
+  .description("Bind an agent-written task draft to this casefile: fills file digests and the plan digest.")
+  .argument("<step>", "bind")
+  .option("--dir <path>", "workspace directory", process.cwd())
+  .action((step: string, o: { dir: string }) => {
+    if (step !== "bind") throw new Error("step must be bind");
+    const cf = Casefile.parse(JSON.parse(readFileSync(join(o.dir, ".lazarus", "casefile.json"), "utf8")));
+    const draftPath = join(o.dir, ".kiro", "specs", "revival", "task-1.draft.json");
+    const draft = DraftManifest.parse(JSON.parse(readFileSync(draftPath, "utf8")));
+    const m = bindDraft(o.dir, draft, cf.caseId);
+    const v = validateManifest(m, cf, o.dir);
+    if (!v.ok) { for (const e of v.errors) console.log(`error  ${e}`); process.exit(1); }
+    writeAtomic(join(o.dir, ".kiro", "specs", "revival", "task-1.json"), JSON.stringify(m, null, 2) + "\n");
+    console.log(`plan ${m.planDigest.slice(0, 12)} bound to case ${cf.caseId} (${m.evaluation.selection})`);
+  });
+
+program
+  .command("record")
+  .description("Save a real Kiro session (diagnosis, plan, the edit) as the replay inputs for the demo.")
+  .requiredOption("--surface <name>", "kiro-ide | kiro-cli | kiro-web | kiro-crew")
+  .requiredOption("--model <name>", "model name shown by Kiro")
+  .option("--agent <name>", "agent that did the work", "lazaro")
+  .option("--passes <n>", "correction passes used", "0")
+  .option("--note <text>", "short note", "")
+  .option("--dir <path>", "fixture workspace where the session ran", process.cwd())
+  .action((o: { surface: string; model: string; agent: string; passes: string; note: string; dir: string }) => {
+    const cf = Casefile.parse(JSON.parse(readFileSync(join(o.dir, ".lazarus", "casefile.json"), "utf8")));
+    const r = importRecorded({
+      fixtureRoot: o.dir,
+      casefile: cf,
+      diagnosisPath: join(o.dir, ".lazarus", "diagnosis.json"),
+      manifestPath: join(o.dir, ".kiro", "specs", "revival", "task-1.json"),
+      provenance: {
+        surface: o.surface, model: o.model, agent: o.agent, correctionPasses: Number(o.passes),
+        recordedAt: new Date().toISOString(), note: o.note,
+      },
+    });
+    console.log(`recorded: ${r.provenance.surface}, ${r.provenance.model}. The demo now replays this session.`);
   });
 
 program

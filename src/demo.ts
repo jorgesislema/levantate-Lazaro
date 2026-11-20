@@ -4,7 +4,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { writeAtomic } from "./casefile.js";
 import { renderReport } from "./report.js";
-import { applyRecordedChange, replayDiagnosis, writeReplayPlan } from "./replay.js";
+import { applyRecordedChange, planFor } from "./replay.js";
 import { renderReviewHtml, renderTable, review } from "./review.js";
 import { scanAndWrite } from "./scan.js";
 import { exportSummary } from "./summary.js";
@@ -32,9 +32,13 @@ export function runDemo(out: string, log: (s: string) => void = console.log): De
   const { casefile: cf } = scanAndWrite({ dir, clock: DEMO_CLOCK });
   log(`      casefile ${cf.caseId}: ${cf.coverage.scannedFiles} files, ${cf.coverage.commits} commits, ${cf.activity.daysInactive} days inactive`);
 
-  step(3, "Load the stored diagnosis and plan (REPLAY inputs, not a live Kiro run)");
-  const m = writeReplayPlan(dir, cf, { properties: true });
-  const before = exportSummary({ label: "gastos-app (before)", casefile: cf, diagnosis: replayDiagnosis(cf), manifest: m, now: DEMO_CLOCK });
+  const plan = planFor(dir, cf, { properties: true });
+  const m = plan.manifest;
+  const diagnosis = plan.diagnosis;
+  step(3, plan.source === "recorded"
+    ? `Load the diagnosis and plan recorded from a real Kiro session (REPLAY inputs: ${plan.provenance!.surface}, ${plan.provenance!.model}, ${plan.provenance!.recordedAt.slice(0, 10)})`
+    : "Load the stored diagnosis and plan (REPLAY inputs, hand-authored placeholder, not a live Kiro run)");
+  const before = exportSummary({ label: "gastos-app (before)", casefile: cf, diagnosis, manifest: m, now: DEMO_CLOCK });
 
   step(4, "Run the approved check before any change (LIVE)");
   const b = recordBaseline(dir, m, cf, DEMO_CLOCK);
@@ -52,7 +56,6 @@ export function runDemo(out: string, log: (s: string) => void = console.log): De
 
   step(7, "Write the report and compare two summaries as a mentor would");
   const reportPath = join(root, "report.html");
-  const diagnosis = replayDiagnosis(cf);
   writeAtomic(reportPath, renderReport({ label: "gastos-app", casefile: cf, diagnosis, verification: v, manifest: m }));
   const after = exportSummary({ label: "gastos-app (after)", casefile: cf, diagnosis, verification: v, manifest: m, now: DEMO_CLOCK });
   const files = [join(root, "summaries", "before.json"), join(root, "summaries", "after.json")];
