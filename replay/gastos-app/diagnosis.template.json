@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "caseId": "$CASE",
+  "cause": "technical_block",
+  "confidence": "medium",
+  "evidenceIds": ["$PROMISE4", "$TODO"],
+  "recollection": "Owner (synthetic): I stopped when Node 12 reached end of life and the startup broke.",
+  "gaps": [
+    { "promiseId": "P1", "status": "fulfilled", "evidenceIds": ["$PROMISE1"] },
+    { "promiseId": "P3", "status": "missing", "evidenceIds": ["$TODO"] }
+  ],
+  "intentSummary": "Track expenses in integer cents, show a correct total, export a monthly PDF and run on Node.",
+  "blocker": { "text": "The legacy startup path was written for Node 12 and fails on current Node. The total math itself is separate and correct.", "evidenceIds": ["$PROMISE4", "$TODO"] },
+  "reviewSignals": [
+    { "category": "quality", "text": "A fake key is committed in an example env file.", "evidenceIds": ["$SECRET"], "uncertainty": "The value looks like a template, not a live key.", "nextAction": "Confirm it is a placeholder and keep it out of real configuration." }
+  ],
+  "opportunity": { "text": "Fix the startup path first, then pin the two loose dependencies.", "evidenceIds": ["$PROMISE4"], "benefit": "A reproducible first milestone on the supported runtime.", "effortMinutes": 20, "acceptance": "check/expense-total.mjs prints PASS." }
+}

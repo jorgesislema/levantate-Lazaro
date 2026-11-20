@@ -5,3 +5,4 @@ coverage/
 *.log
 .env
 # NOTE: never ignore .kiro/ (required by Kiroween rules)
+.lazarus/
