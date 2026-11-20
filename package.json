@@ -1,29 +1,42 @@
 {
-  "name": "levantate-lazaro",
-  "version": "0.1.0",
-  "description": "Resurrect your dead repos: recover intent, fix the first blocker, prove the result.",
-  "license": "MIT",
-  "type": "module",
-  "engines": {
-    "node": ">=24"
-  },
-  "bin": {
-    "levantate": "dist/cli.js"
-  },
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "fixtures": "node scripts/make-fixtures.mjs fixtures/gastos-app",
-    "check:baseline": "node fixtures/gastos-app/check/expense-total.mjs",
-    "test": "vitest run"
-  },
-  "devDependencies": {
-    "@types/node": "^24.0.0",
-    "fast-check": "^4.10.3",
-    "typescript": "^5.6.0",
-    "vitest": "^2.1.0"
-  },
-  "dependencies": {
-    "commander": "^15.1.0",
-    "zod": "^4.6.7"
-  }
+    "name":  "levantate-lazaro",
+    "version":  "0.1.0",
+    "description":  "Resurrect your dead repos: recover intent, fix the first blocker, prove the result.",
+    "license":  "MIT",
+    "type":  "module",
+    "engines":  {
+                    "node":  ">=24"
+                },
+    "bin":  {
+                "levantate":  "dist/cli.js"
+            },
+    "scripts":  {
+                    "build":  "tsc -p tsconfig.json",
+                    "fixtures":  "node scripts/make-fixtures.mjs fixtures/gastos-app",
+                    "check:baseline":  "node fixtures/gastos-app/check/expense-total.mjs",
+                    "test":  "vitest run",
+                    "demo":  "node dist/cli.js demo --out demo-out",
+                    "smoke":  "npm run build \u0026\u0026 npm run demo",
+                    "release":  "node scripts/make-release.mjs"
+                },
+    "devDependencies":  {
+                            "@types/node":  "^24.0.0",
+                            "esbuild":  "^0.28.2",
+                            "fast-check":  "^4.10.3",
+                            "typescript":  "^5.6.0",
+                            "vitest":  "^2.1.0"
+                        },
+    "dependencies":  {
+                         "commander":  "^15.1.0",
+                         "zod":  "^4.6.7"
+                     },
+    "files":  [
+                  "dist",
+                  "kit",
+                  "replay",
+                  "fixtures-src",
+                  "scripts/make-fixtures.mjs",
+                  "README.md",
+                  "LICENSE"
+              ]
 }

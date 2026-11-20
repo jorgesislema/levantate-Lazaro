@@ -1,0 +1,8 @@
+{
+  "enabled": true,
+  "name": "Typecheck on edit",
+  "description": "After a source or test file is edited, run the TypeScript check. Narrow on purpose: no model call, no network.",
+  "version": "1",
+  "when": { "type": "fileEdited", "patterns": ["src/**/*.ts", "test/**/*.ts"] },
+  "then": { "type": "runCommand", "command": "npx tsc -p tsconfig.json --noEmit" }
+}

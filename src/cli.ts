@@ -2,7 +2,7 @@
 import { Command } from "commander";
 import { init } from "./init.js";
 import { scanAndWrite } from "./scan.js";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { Casefile } from "./casefile.js";
 import { Diagnosis, toScoreInput, validateDiagnosis } from "./diagnosis.js";
@@ -14,6 +14,7 @@ import { isBaseline, recordBaseline, verifyAfter } from "./verify.js";
 import type { Verification } from "./verify.js";
 import { writeAtomic } from "./casefile.js";
 import { renderReport } from "./report.js";
+import { runDemo } from "./demo.js";
 import { exportSummary } from "./summary.js";
 import { review, renderTable, renderReviewHtml } from "./review.js";
 
@@ -98,6 +99,10 @@ program
   .argument("<phase>", "baseline | after")
   .option("--dir <path>", "workspace directory", process.cwd())
   .action((phase: string, o: { dir: string }) => {
+    if (!existsSync(join(o.dir, ".kiro", "specs", "revival", "task-1.json")) || !existsSync(join(o.dir, ".lazarus", "casefile.json"))) {
+      console.log("no approved task manifest or casefile; nothing to verify");
+      return;
+    }
     const cf = Casefile.parse(JSON.parse(readFileSync(join(o.dir, ".lazarus", "casefile.json"), "utf8")));
     const m = readManifest(o.dir);
     if (phase === "baseline") {
@@ -149,6 +154,14 @@ program
     const r = review(files);
     console.log(renderTable(r));
     if (o.html) writeAtomic(o.html, renderReviewHtml(r));
+  });
+
+program
+  .command("demo")
+  .description("Offline replay on the synthetic fixture: failing check, recorded change, passing check, report.")
+  .option("--out <dir>", "output directory", "demo-out")
+  .action((o: { out: string }) => {
+    runDemo(o.out);
   });
 
 program

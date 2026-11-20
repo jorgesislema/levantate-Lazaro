@@ -35,7 +35,7 @@ const day = (iso: string) => iso.slice(0, 10);
 export function renderTable(r: Review): string {
   const head = ["Project", "Goal", "Blocker", "Next action", "Improvement", "Check (as of)"];
   const rows = r.rows.map(({ summary: s }) => [
-    clip(clean(s.label), 18), clip(clean(s.goal), 34), clip(clean(s.blocker), 34),
+    clip(clean(s.label), 26), clip(clean(s.goal), 34), clip(clean(s.blocker), 34),
     clip(clean(s.nextAction), 34), clip(clean(s.improvement ?? "-"), 24), `${s.check.status} (${day(s.check.asOf)})`,
   ]);
   const w = head.map((h, i) => Math.max(h.length, ...rows.map((x) => x[i]!.length)));

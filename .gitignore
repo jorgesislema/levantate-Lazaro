@@ -6,3 +6,6 @@ coverage/
 .env
 # NOTE: never ignore .kiro/ (required by Kiroween rules)
 .lazarus/
+demo-out/
+*.tgz
+release/

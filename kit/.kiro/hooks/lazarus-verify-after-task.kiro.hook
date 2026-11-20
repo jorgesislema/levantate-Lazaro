@@ -1,0 +1,8 @@
+{
+  "enabled": true,
+  "name": "Lazarus verify after task",
+  "description": "When the agent stops, re-run the approved check and record the outcome. Does nothing unless an approved task manifest exists.",
+  "version": "1",
+  "when": { "type": "agentStop" },
+  "then": { "type": "runCommand", "command": "npx levantate verify after" }
+}
