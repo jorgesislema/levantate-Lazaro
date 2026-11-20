@@ -7,6 +7,7 @@ import { join } from "node:path";
 import { Casefile } from "./casefile.js";
 import { Diagnosis, toScoreInput, validateDiagnosis } from "./diagnosis.js";
 import { score } from "./score.js";
+import { contextPack, recordUsage } from "./context.js";
 
 const program = new Command();
 program.name("levantate").description("Resurrect your dead repos.").version("0.1.0");
@@ -33,6 +34,19 @@ program
     const c = casefile.coverage;
     console.log(`casefile ${casefile.caseId} -> ${path}`);
     console.log(`files ${c.scannedFiles}/${c.trackedPaths}, commits ${c.commits} (${c.history}), omitted evidence ${c.omittedEvidence}`);
+  });
+
+program
+  .command("context")
+  .description("Print the bounded, redacted context pack for a phase and record its size.")
+  .requiredOption("--phase <name>", "interview | diagnosis | plan | task")
+  .option("--dir <path>", "workspace directory", process.cwd())
+  .action((o: { phase: string; dir: string }) => {
+    const cf = Casefile.parse(JSON.parse(readFileSync(join(o.dir, ".lazarus", "casefile.json"), "utf8")));
+    const pack = contextPack(o.dir, cf);
+    recordUsage(o.dir, { at: new Date().toISOString(), phase: o.phase, inputBytes: pack.bytes, passes: 1 });
+    console.log(pack.text);
+    console.error(`context ${pack.bytes} bytes, ${pack.files.length} files`);
   });
 
 program
