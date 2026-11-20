@@ -1,6 +1,6 @@
 # Revival Kit Tasks
 
-- [ ] **T1 — Bootstrap and synthesize the fixture.** Set up the Node 24 TypeScript CLI, tests, MIT license and versioned fixture source. Generate reproducible Git history for `gastos-app` with legacy runtime metadata. Prove baseline failure on a specific expense behavior with a lightweight Node-only check and a fixed expected result. Covers R1, R4, R5.
+- [x] **T1 — Bootstrap and synthesize the fixture.** Set up the Node 24 TypeScript CLI, tests, MIT license and versioned fixture source. Generate reproducible Git history for `gastos-app` with legacy runtime metadata. Prove baseline failure on a specific expense behavior with a lightweight Node-only check and a fixed expected result. Covers R1, R4, R5.
 - [ ] **T2 — Build the offline casefile.** Implement non-clobbering init, bounded Git and file collection, defensive indicators with redaction, coarse code map, evidence and context caps. Verify a clean fixture, empty Git history, oversized files and a repeated init. Covers R1.
 - [ ] **T3 — Validate and score.** Add casefile and diagnosis schemas, evidence binding, stale detection and pure scoring. Pass P1–P7 and snapshot and reference tests. Covers R2.
 - [ ] **T4 — Ship Kiro prompts and specs.** Bundle short steering and on-demand phase prompts. Demonstrate the batched interview, three profiles, one goal-linked improvement, one evaluation recommendation with choices, and a validated task 1 manifest. Record input size and agent passes. Covers R2, R3, R5.
